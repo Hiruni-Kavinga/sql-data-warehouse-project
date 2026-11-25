@@ -10,129 +10,43 @@ Run this script to re-define the DDL structure of 'bronze' Tables
 
 */
 
-create or alter procedure bronze.load_bronze as
-begin
-	declare @start_time datetime, @end_time datetime;
-begin try
-		print '====================================';
-		print 'Loading Bronze Layer';
-		print '====================================';
 
-		print '---------------------------------';
-		print 'Loading CRM Tables';
-		print '---------------------------------';
-
-		set @start_time = GETDATE();
-		print '>> Truncating Table: bronze.crm_cust_info';
-		truncate table bronze.crm_cust_info;
-
-		print '>> Inserting Data into: bronze.crm_cust_info';
-		bulk insert bronze.crm_cust_info
-		from 'C:\Users\ASUS\Downloads\sql-data-warehouse-project-main\sql-data-warehouse-project-main\01_datasets\source_crm\cust_info.csv'
-		with (
-		firstrow = 2,
-		fieldterminator = ',',
-		tablock
-
+create table bronze.crm_prd_info(
+	prd_id int,
+	prd_key nvarchar(50),
+	prd_nm nvarchar(50),
+	prd_cost int,
+	prd_line nvarchar(50),
+	prd_start_dt datetime,
+	prd_end_dt datetime
 	);
-			set @end_time = GETDATE();
-			print '>> Load Duration: ' +cast(DATEDIFF(second, @start_time, @end_time) as nvarchar) + 'seconds'
-			print '>> ------------'
 
-		set @start_time = GETDATE();
-		print '>> Truncating Table: bronze.crm_prd_info';
-		truncate table bronze.crm_prd_info;
-	
-		print '>> Inserting Data into: bronze.crm_prd_info';
-		bulk insert bronze.crm_prd_info
-		from 'C:\Users\ASUS\Downloads\sql-data-warehouse-project-main\sql-data-warehouse-project-main\01_datasets\source_crm\prd_info.csv'
-		with (
-			firstrow = 2,
-			fieldterminator = ',',
-			tablock
+CREATE TABLE bronze.crm_sales_details (
+sls_ord_num NVARCHAR(50),
+sls_prd_key NVARCHAR(50),
+sls_cust_id INT,
+sls_order_dt INT,
+sls_ship_dt INT,
+sls_due_dt INT,
+sls_sales INT,
+sls_quantity INT,
+sls_price INT
+);
 
-		);
-		set @end_time = GETDATE();
-			print '>> Load Duration: ' +cast(DATEDIFF(second, @start_time, @end_time) as nvarchar) + 'seconds'
-			print '>> ------------'
+CREATE TABLE bronze.erp_loc_a101 (
+	cid NVARCHAR(50),
+	cntry NVARCHAR(50)
+);
 
-		set @start_time = GETDATE();
-		print '>> Truncating Table: bronze.crm_sales_details';
-		truncate table bronze.crm_sales_details;
+CREATE TABLE bronze.erp_cust_az12 (
+	cid NVARCHAR(50),
+	bdate DATE,
+	gen	NVARCHAR(50)
+	);
 
-		print '>> Inserting Data into: bronze.sales_details_info';
-		bulk insert bronze.crm_sales_details
-		from 'C:\Users\ASUS\Downloads\sql-data-warehouse-project-main\sql-data-warehouse-project-main\01_datasets\source_crm\sales_details.csv'
-		with (
-			firstrow = 2,
-			fieldterminator = ',',
-			tablock
-
-		);
-		set @end_time = GETDATE();
-			print '>> Load Duration: ' +cast(DATEDIFF(second, @start_time, @end_time) as nvarchar) + 'seconds'
-			print '>> ------------'
-
-		set @start_time = GETDATE();
-		print '>> Truncating Table: bronze.erp_loc_a101';
-		truncate table bronze.erp_loc_a101;
-	
-		print '>> Inserting Data into: bronze.erp_loc_a101';
-		bulk insert bronze.erp_loc_a101
-		from 'C:\Users\ASUS\Downloads\sql-data-warehouse-project-main\sql-data-warehouse-project-main\01_datasets\source_erp\loc_a101.csv'
-		with (
-			firstrow = 2,
-			fieldterminator = ',',
-			tablock
-
-		);
-		set @end_time = GETDATE();
-			print '>> Load Duration: ' +cast(DATEDIFF(second, @start_time, @end_time) as nvarchar) + 'seconds'
-			print '>> ------------'
-
-		set @start_time = GETDATE();
-		print '>> Truncating Table: bronze.erp_cust_az12';
-		truncate table bronze.erp_cust_az12;
-
-		print '>> Inserting Data into: bronze.erp_cust_az12';
-		bulk insert bronze.erp_cust_az12
-		from 'C:\Users\ASUS\Downloads\sql-data-warehouse-project-main\sql-data-warehouse-project-main\01_datasets\source_erp\cust_az12.csv'
-		with (
-			firstrow = 2,
-			fieldterminator = ',',
-			tablock
-
-		);
-		set @end_time = GETDATE();
-			print '>> Load Duration: ' +cast(DATEDIFF(second, @start_time, @end_time) as nvarchar) + 'seconds'
-			print '>> ------------'
-		
-		set @start_time = GETDATE();
-		print '>> Truncating Table: bronze.erp_px_cat_g1v2';
-		truncate table bronze.erp_px_cat_g1v2;
-	
-		print '>> Inserting Data into: bronze.erp_px_cat_g1v2';
-		bulk insert bronze.erp_px_cat_g1v2
-		from 'C:\Users\ASUS\Downloads\sql-data-warehouse-project-main\sql-data-warehouse-project-main\01_datasets\source_erp\px_cat_g1v2.csv'
-		with (
-			firstrow = 2,
-			fieldterminator = ',',
-			tablock
-
-		);
-		set @end_time = GETDATE();
-			print '>> Load Duration: ' +cast(DATEDIFF(second, @start_time, @end_time) as nvarchar) + 'seconds'
-			print '>> ------------'
-
-	end try
-	begin catch
-		print '============================='
-		print 'Error occured loading bronze layer'
-		print 'Error Msg' + Error_Message();
-		print 'Error Msg' + cast (ERROR_NUMBER() AS NVARCHAR);
-		print 'Error Msg' + cast (ERROR_STATE() AS NVARCHAR);
-		print '============================='
-	end catch
-end
-go
-EXEC bronze.load_bronze;
+CREATE TABLE bronze.erp_px_cat_g1v2 (
+id NVARCHAR(50),
+cat NVARCHAR(50),
+subcat NVARCHAR(50),
+maintenance NVARCHAR(50)
+);
